@@ -76,7 +76,7 @@ def search_tle_by_date(date_time):
     jd_year = jday(float('20' + date_time[4:6]), 1, 1, 0, 0, 0)
     epoch_day = jd - jd_year
     current_epoch_tle = float(date_time[4:6] + str(round(epoch_day, 8)))
-    file_tle = open("../sat000052191.txt", 'r').read()
+    file_tle = open("sat000052191.txt", 'r').read()
     epoch_day_tle = [float(line[17:33]) for line in file_tle.split('\n')[:-1] if line[0] == '1']
     idx = np.argmin(np.abs(current_epoch_tle - np.array(epoch_day_tle)))
     line_1 = file_tle.split('\n')[0 + 2 * idx]
@@ -86,16 +86,17 @@ def search_tle_by_date(date_time):
 
 if __name__ == '__main__':
     filename_list = []
-    for filename in os.listdir():
-        if '.jpg' in filename:
-            filename_list.append(filename)
+    directory = os.getcwd() + '/images'
+
+    for image in os.listdir(directory):
+        filename_list.append(image)
 
     dataset_info = {'sun_pos': [], 'sc_pos_i': [], 'sc_vel_i': [], 'jd': [], 'filename': [], 'line1': [], 'line2': [],
                     'sat_name': [], 'sat_node': []}
     # lop through each image in the dataset
     for earth_image in filename_list:
         jd, sat, node, pos_i, vel_i, sun_pos_from_sc, line1, line2 = get_file_info(earth_image)
-        dataset_info['sun_pos'].append(sun_pos_from_sc)
+        dataset_info['sun_pos'].append(sun_pos_from_sc.tolist())
         dataset_info['sc_pos_i'].append(pos_i)
         dataset_info['sc_vel_i'].append(vel_i)
         dataset_info['jd'].append(jd)
@@ -105,5 +106,5 @@ if __name__ == '__main__':
         dataset_info['sat_name'].append(sat)
         dataset_info['sat_node'].append(node)
 
-    with open("FILENAME.json", "w") as outfile:
-        json.dump(dataset_info, outfile)
+    with open("DATA.json", "w") as outfile:
+        json.dump(dataset_info, outfile, indent=2)
