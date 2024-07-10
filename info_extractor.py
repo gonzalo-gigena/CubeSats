@@ -17,7 +17,6 @@ DEG2RAD = 1 / RAD2DEG
 au = 149597870.691  # km
 rs = au
 
-
 def jday(year, month, day, hour, minute, seconds):
     jd0 = 367.0 * year - 7.0 * (year + ((month + 9.0) // 12.0)) * 0.25 // 1.0 + 275.0 * month // 9.0 + day + 1721013.5
     utc = ((seconds / 60.0 + minute) / 60.0 + hour)  # utc in hours#
