@@ -6,35 +6,28 @@ SPEL UChile
 """
 
 import os
-from sgp4.api import Satrec
-from sgp4.api import WGS84
 import numpy as np
 import json
+from sgp4.api import Satrec
+from sgp4.api import WGS84
+from datetime import datetime
 
-re = 6378.137  # km
 RAD2DEG = 180 / np.pi
 DEG2RAD = 1 / RAD2DEG
-au = 149597870.691  # km
-rs = au
+AU = 149597870.691  # km
 
+# Calculates the Julian Date from a given date and time.
 def jday(year, month, day, hour, minute, seconds):
     jd0 = 367.0 * year - 7.0 * (year + ((month + 9.0) // 12.0)) * 0.25 // 1.0 + 275.0 * month // 9.0 + day + 1721013.5
-    utc = ((seconds / 60.0 + minute) / 60.0 + hour)  # utc in hours#
+    utc = ((seconds / 60.0 + minute) / 60.0 + hour)  # UTC in hours
     return jd0 + utc / 24.
 
-def search_tle_by_date(date_time):
-    jd = jday(
-        float('20' + date_time[4:6]),
-        float(date_time[2:4]),
-        float(date_time[:2]),
-        float(date_time[7:9]) - 1.0,
-        float(date_time[9:11]),
-        float(date_time[11:])
-    )
-    jd_year = jday(float('20' + date_time[4:6]), 1, 1, 0, 0, 0)
-    epoch_day = jd - jd_year
-
-    current_epoch_tle = float(date_time[4:6] + str(round(epoch_day, 8)))
+# Searches for the TLE (Two-Line Element) data closest to a given date and time.
+def search_tle_by_date(jd, year):
+    jd_year_start = jday(year, 1, 1, 0, 0, 0)
+    epoch_day = jd - jd_year_start
+    
+    current_epoch_tle = float(f"{year % 100}{round(epoch_day, 8)}")
 
     file_tle = open("sat000052191.txt", 'r').read()
     epoch_day_tle = [float(line[17:33]) for line in file_tle.split('\n')[:-1] if line[0] == '1']
@@ -43,7 +36,33 @@ def search_tle_by_date(date_time):
     line_1 = file_tle.split('\n')[0 + 2 * idx]
     line_2 = file_tle.split('\n')[0 + 2 * idx + 1]
 
-    return line_1, line_2, jd
+    return line_1, line_2
+
+def sat_pos_and_vel(line1, line2, jd):
+    #High-speed computation of satellite positions and velocities
+    satellite = Satrec.twoline2rv(line1, line2, WGS84)
+    _, pos, vel = satellite.sgp4(int(jd), jd % 1)
+
+    return pos, vel
+
+def sun_pos_from_sc(jd, sat_pos):
+    # all in degree
+    n = jd - 2451545.0
+    l = (280.459 + 0.98564736 * n) % 360.0
+    m = (357.529 + 0.98560023 * n) % 360.0
+    m *= DEG2RAD
+    lam = (l + 1.915 * np.sin(m) + 0.0200 * np.sin(2 * m)) % 360.0
+    lam *= DEG2RAD
+    e = 23.439 - 3.56e-7 * n
+    e *= DEG2RAD
+
+    r_sun = (1.00014 - 0.01671 * np.cos(m) - 0.000140 * np.cos(2 * m)) * AU
+    u_v = np.array([np.cos(lam), np.cos(e) * np.sin(lam), np.sin(lam) * np.sin(e)])
+    
+    sun_pos_i_earth = r_sun * u_v
+    sun_pos_from_sc = sun_pos_i_earth - sat_pos
+    
+    return sun_pos_from_sc.tolist()
 
 def node_sat(image_name):
     node = 'NAN'
@@ -58,56 +77,40 @@ def node_sat(image_name):
         sat = 'PS'
     return node, sat
 
-def get_file_info(image_name):
-    date_time = image_name[:13]
-    
-    line1, line2, jd = search_tle_by_date(date_time)
-    
-    node, sat = node_sat(image_name)
-    
-    #High-speed computation of satellite positions and velocities
-    satellite = Satrec.twoline2rv(line1, line2, WGS84)
-    _, pos, vel = satellite.sgp4(int(jd), jd % 1)
+def get_file_info(file_name):
+    date_time = file_name[:13]
 
-    sun_pos_i_earth = calc_sun_pos_i(jd)
-    sun_pos_from_sc = sun_pos_i_earth - pos
+    # UTC + 1
+    dt = datetime.strptime(date_time, '%d%m%y_%H%M%S')
+    jd = jday(dt.year, dt.month, dt.day, dt.hour - 1.0, dt.minute, dt.second)
+
+    line1, line2= search_tle_by_date(jd, dt.year)
     
-    return jd, sat, node, pos, vel, sun_pos_from_sc, line1, line2
+    pos, vel = sat_pos_and_vel(line1, line2, jd)
 
+    sun_pos = sun_pos_from_sc(jd, pos)
+    
+    node, sat = node_sat(file_name)
 
-def calc_sun_pos_i(jd):
-    # all in degree
-    n = jd - 2451545.0
-    l = (280.459 + 0.98564736 * n) % 360.0
-    m = (357.529 + 0.98560023 * n) % 360.0
-    m *= DEG2RAD
-    lam = (l + 1.915 * np.sin(m) + 0.0200 * np.sin(2 * m)) % 360.0
-    lam *= DEG2RAD
-    e = 23.439 - 3.56e-7 * n
-    e *= DEG2RAD
-
-    r_sun = (1.00014 - 0.01671 * np.cos(m) - 0.000140 * np.cos(2 * m)) * au
-    u_v = np.array([np.cos(lam), np.cos(e) * np.sin(lam), np.sin(lam) * np.sin(e)])
-    return r_sun * u_v
+    return {
+        'sun_pos': sun_pos,
+        'sc_pos_i': pos,
+        'sc_vel_i': vel,
+        'jd': jd,
+        'filename': file_name,
+        'line1': line1,
+        'line2': line2,
+        'sat_name': sat,
+        'sat_node': node
+    }
 
 if __name__ == '__main__':
-    images =  os.listdir('./images')
+    files =  os.listdir('./images')
 
     dataset_info = []
     # loop through each image in the dataset
-    for image in images:
-        jd, sat, node, pos_i, vel_i, sun_pos_from_sc, line1, line2 = get_file_info(image)
-        dataset_info.append({
-            'sun_pos': sun_pos_from_sc.tolist(),
-            'sc_pos_i': pos_i,
-            'sc_vel_i': vel_i,
-            'jd': jd,
-            'filename': image,
-            'line1': line1,
-            'line2': line2,
-            'sat_name': sat,
-            'sat_node': node
-        })
+    for file_name in files:
+        dataset_info.append(get_file_info(file_name))
 
-    with open('DATA.json', 'w') as outfile:
+    with open('satellite_data_040822-160822.json', 'w') as outfile:
         json.dump(dataset_info, outfile, indent=2)
