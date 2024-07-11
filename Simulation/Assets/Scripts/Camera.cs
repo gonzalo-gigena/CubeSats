@@ -2,11 +2,10 @@ using UnityEngine;
 
 public class Camera : MonoBehaviour
 {
-    public GameObject cubesat;  // The target object to follow
-    public GameObject earth;  // The target object to follow
+    GameObject cubesat;  // The target object to follow
+    GameObject earth;  // The target object to follow
     public Vector3 offset;  // The offset distance between the camera and the target
     public float distance = 2.0f; // Distance from object1 to place the camera
-
 
     void Start()
     {

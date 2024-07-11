@@ -23,12 +23,12 @@ def generate_position(dt):
 
 if __name__ == '__main__':
     positions = []
-    N = 1
+    N = 10
     starting_date = datetime.strptime('040822_154626', '%d%m%y_%H%M%S')
     
     for i in range(0, N):
         new_date = starting_date + timedelta(hours=i*2)
         positions.append(generate_position(new_date))
 
-    with open('generated_positions.json', 'w') as outfile:
+    with open('Simulation/Assets/Resources/generated_positions.json', 'w') as outfile:
         json.dump(positions, outfile, indent=2)
