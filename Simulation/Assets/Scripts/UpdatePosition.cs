@@ -1,15 +1,10 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UpdatePosition: MonoBehaviour
+public class UpdatePosition : MonoBehaviour
 {
-    GameObject cubesat;
-    GameObject sun;
-    GameObject earth;
-    const double SUN_RADIUS = 695700f; //(km) 
-    const double EARTH_RADIUS = 6378.137f; //(km)
-    const double UNIT = 100000f; // (km)
+    Body cubesat, sun;
+    Earth earth;
     List<Position> positions;
     int index = 0;
 
@@ -20,15 +15,15 @@ public class UpdatePosition: MonoBehaviour
         positions = loader.LoadData();
 
         // Search objects by tag
-        cubesat = GameObject.FindGameObjectWithTag("Cubesat");
-        earth = GameObject.FindGameObjectWithTag("Earth");
-        sun = GameObject.FindGameObjectWithTag("Sun");
+        GameObject cubesatObj = GameObject.FindGameObjectWithTag("Cubesat");
+        GameObject earthObj = GameObject.FindGameObjectWithTag("Earth");
+        GameObject sunObj = GameObject.FindGameObjectWithTag("Sun");
 
-        earth.transform.position = new Vector3(0, 0, 0);
-        SetScale(earth, (float)(EARTH_RADIUS / UNIT));
-        SetScale(sun, (float)(SUN_RADIUS / UNIT));
+        earth = new Earth(earthObj, Units.EARTH_RADIUS);
+        sun = new Sun(sunObj, Units.SUN_RADIUS);
+        cubesat = new Cubesat(cubesatObj);
 
-        UpdateSunAndCubesat();
+        SetPositions();
     }
 
     void Update()
@@ -40,37 +35,23 @@ public class UpdatePosition: MonoBehaviour
         }
     }
 
-    void NextPosition(){
+    void NextPosition()
+    {
         index = (index + 1) % positions.Count;
-        Debug.Log("Spacebar pressed! " + index);
-        UpdateSunAndCubesat();
+        SetPositions();
     }
 
-    void UpdateSunAndCubesat()
+    void SetPositions()
     {
+        Debug.Log(index);
         Position currentPos = positions[index];
 
-        Vector3 newSunPos = ListToVector3(currentPos.sun_pos);
-        Vector3 newCubesatPos = ListToVector3(currentPos.sc_pos_i);
+        List<double> subsolarPoint = currentPos.subsolar_point;
 
-        sun.transform.position = newSunPos;
-        cubesat.transform.position = newCubesatPos;
+        cubesat.SetPosition(currentPos.sc_pos_i);
+        sun.SetPosition(currentPos.sun_pos);
+        earth.SetRotation(subsolarPoint, sun.GetBody());
 
     }
-
-    void SetScale(GameObject obj, float scale){
-        obj.transform.localScale = new Vector3(scale, scale, scale);
-    }
-
-    Vector3 ListToVector3(List<double> list)
-    {
-        if (list.Count != 3)
-        {
-            throw new ArgumentException("The list must contain at least three elements.");
-        }
-
-        return new Vector3((float)(list[0] / UNIT), (float)(list[1] / UNIT), (float)(list[2] / UNIT));
-    }
-
 
 }

@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
 
@@ -8,10 +6,8 @@ public class Position
 {
     public List<double> sun_pos { get; set; }
     public List<double> sc_pos_i { get; set; }
-    public List<double> sc_vel_i { get; set; }
     public double jd { get; set; }
-    public string line1 { get; set; }
-    public string line2 { get; set; }
+    public List<double> subsolar_point { get; set; }
 }
 
 public class PositionLoader
