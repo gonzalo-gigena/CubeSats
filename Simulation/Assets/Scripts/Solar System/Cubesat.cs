@@ -8,4 +8,8 @@ public class Cubesat : Body
     {
         body = obj;
     }
+
+    public void LookAt(GameObject obj){
+        body.transform.LookAt(obj.transform);
+    }
 }

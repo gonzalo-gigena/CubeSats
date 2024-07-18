@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class UpdatePosition : MonoBehaviour
 {
-    Body cubesat, sun;
+    Sun sun;
+    Cubesat cubesat;
     Earth earth;
     List<Position> positions;
     int index = 0;
@@ -43,14 +44,14 @@ public class UpdatePosition : MonoBehaviour
 
     void SetPositions()
     {
-        Debug.Log(index);
         Position currentPos = positions[index];
 
         List<double> subsolarPoint = currentPos.subsolar_point;
 
-        cubesat.SetPosition(currentPos.sc_pos_i);
         sun.SetPosition(currentPos.sun_pos);
         earth.SetRotation(subsolarPoint, sun.GetBody());
+        cubesat.SetPosition(currentPos.sc_pos_i);
+        cubesat.LookAt(sun.GetBody());
 
     }
 

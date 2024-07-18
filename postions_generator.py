@@ -43,8 +43,8 @@ def generate_position(dt):
 if __name__ == '__main__':
     positions = []
     N = 10
-    # starting_date = datetime.strptime('010120_000000', '%d%m%y_%H%M%S')
-    starting_date = datetime.utcnow()
+    starting_date = datetime.strptime('190724_083000', '%d%m%y_%H%M%S')
+    # starting_date = datetime.utcnow()
 
     for i in range(0, N):
         new_date = starting_date + timedelta(minutes=i)
