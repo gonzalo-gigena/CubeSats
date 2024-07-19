@@ -2,19 +2,19 @@ using UnityEngine;
 
 public class CubesatCamera : MonoBehaviour
 {
-    GameObject cubesat, earth;  // The target object to follow
+    GameObject cubesat, sun;  // The target object to follow
     public float lookSpeed = 10f;  // Speed of looking around
     void Start()
     {
         cubesat = GameObject.FindGameObjectWithTag("Cubesat");
-        earth = GameObject.FindGameObjectWithTag("Earth");
+        sun = GameObject.FindGameObjectWithTag("Sun");
     }
 
     void LateUpdate()
     {
         if (transform.position != cubesat.transform.position){
             transform.position = cubesat.transform.position;
-            transform.LookAt(earth.transform);
+            transform.LookAt(sun  .transform);
         }
         // Camera rotation
         if (Input.GetMouseButton(1)) // Right mouse button

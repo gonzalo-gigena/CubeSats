@@ -153,7 +153,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.9458972, b: 0.8915094, a: 1}
-  m_Intensity: 100000000
+  m_Intensity: 300000000
   m_Range: 20000
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -195,7 +195,7 @@ Light:
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 6.11
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
@@ -253,6 +253,7 @@ GameObject:
   - component: {fileID: 483229229}
   - component: {fileID: 483229230}
   - component: {fileID: 483229227}
+  - component: {fileID: 483229231}
   m_Layer: 0
   m_Name: FreeCameraMovement
   m_TagString: Untagged
@@ -351,7 +352,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 15000
+  far clip plane: 20000
   field of view: 30
   orthographic: 0
   orthographic size: 5
@@ -385,6 +386,23 @@ MonoBehaviour:
   moveSpeed: 3
   lookSpeed: 10
   zoomSpeed: 10
+--- !u!114 &483229231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 483229225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: fa1c0d46eecfc4229b969a6d5c04ac14, type: 2}
 --- !u!1 &537580534
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,7 +564,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 15000
+  far clip plane: 20000
   field of view: 46
   orthographic: 0
   orthographic size: 5
@@ -662,7 +680,7 @@ Transform:
   m_GameObject: {fileID: 825222694}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10000, y: 0, z: 0}
+  m_LocalPosition: {x: 15000, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -682,6 +700,7 @@ GameObject:
   - component: {fileID: 1558980068}
   - component: {fileID: 1558980065}
   - component: {fileID: 1558980066}
+  - component: {fileID: 1558980069}
   m_Layer: 0
   m_Name: CubesatCamera
   m_TagString: Untagged
@@ -793,7 +812,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 15000
+  far clip plane: 20000
   field of view: 50
   orthographic: 0
   orthographic size: 5
@@ -812,6 +831,23 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1558980069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1558980063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: e71b914a093f24fe9beb60a6810492c8, type: 2}
 --- !u!1001 &1871082101
 PrefabInstance:
   m_ObjectHideFlags: 0
