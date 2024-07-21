@@ -1,7 +1,10 @@
 import json
 import ephem
+
 from datetime import datetime, timedelta
 from info_extractor import search_tle_by_date, sat_pos_and_vel, jday, sun_pos_from_sc
+
+DATE_FORMAT = '%d-%m-%Y %H:%M:%S.%f'
 
 def subsolar_point_at_utc(utc_datetime):
     # Initialize an observer location (use a central point on Earth)
@@ -33,22 +36,30 @@ def generate_position(dt):
     
     subsolar_point = subsolar_point_at_utc(dt)
 
-    return {
-        'sun_pos': sun_pos,
-        'sc_pos_i': pos,
-        'jd': jd,
-        'subsolar_point': subsolar_point,
-    }
+    return sun_pos, subsolar_point, pos
 
 if __name__ == '__main__':
-    positions = []
     N = 10
-    starting_date = datetime.strptime('190724_083000', '%d%m%y_%H%M%S')
-    # starting_date = datetime.utcnow()
+    #starting_date = datetime.strptime('18-06-2024 00:00:00.000000', DATE_FORMAT)
+    starting_date = datetime.utcnow()
+    
+    positions = {
+        'dates': [],
+        'subsolar_points': [],
+        'sun_pos': [],
+        'satellites': [{
+            'name': 'CUBESAT',
+            'pos': []
+        }]
+    }
 
     for i in range(0, N):
         new_date = starting_date + timedelta(minutes=i)
-        positions.append(generate_position(new_date))
+        sun_pos, subsolar_point, sat_pos = generate_position(new_date)
+        positions['dates'].append(new_date.strftime(DATE_FORMAT))
+        positions['subsolar_points'].append(subsolar_point)
+        positions['sun_pos'].append(sun_pos)
+        positions['satellites'][0]['pos'].append(sat_pos)
 
     with open('Simulation/Assets/Resources/generated_positions.json', 'w') as outfile:
         json.dump(positions, outfile, indent=2)

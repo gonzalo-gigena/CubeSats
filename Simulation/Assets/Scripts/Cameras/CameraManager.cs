@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    public List<GameObject> cameras;
+    List<GameObject> cameras;
     int currentCam = 0;
 
     // Start is called before the first frame update
