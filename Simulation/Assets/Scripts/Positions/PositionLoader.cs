@@ -2,23 +2,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
-public class Position
+public class Positions
 {
-    public List<double> sun_pos { get; set; }
-    public List<double> sc_pos_i { get; set; }
-    public double jd { get; set; }
-    public List<double> subsolar_point { get; set; }
+    public List<string> dates { get; set; }
+    public List<List<double>> subsolar_points { get; set; }
+    public List<List<double>> sun_pos { get; set; }
+    public List<Satellite> satellites { get; set; }
+}
+
+public class Satellite
+{
+    public string name { get; set; }
+    public List<List<double>> pos { get; set; }
 }
 
 public class PositionLoader
 {
     private string jsonFilePath = "generated_positions";
 
-    public List<Position> LoadData()
+    public Positions LoadData()
     {
         TextAsset jsonFile = Resources.Load<TextAsset>(jsonFilePath);
         string jsonContent = jsonFile.text;
-        List<Position> positions = JsonConvert.DeserializeObject<List<Position>>(jsonContent);
+        Positions positions = JsonConvert.DeserializeObject<Positions>(jsonContent);
 
         return positions;
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ public class UpdatePosition : MonoBehaviour
     Sun sun;
     Cubesat cubesat;
     Earth earth;
-    List<Position> positions;
+    Positions positions;
     int index = 0;
 
     void Start()
@@ -38,20 +39,25 @@ public class UpdatePosition : MonoBehaviour
 
     void NextPosition()
     {
-        index = (index + 1) % positions.Count;
+        // All list inside the Positions object have the same length
+        index = (index + 1) % positions.dates.Count;
         SetPositions();
     }
 
     void SetPositions()
     {
-        Position currentPos = positions[index];
+        String date = positions.dates[index];
+        List<double> subsolarPoint = positions.subsolar_points[index];
+        List<double> sunPosition = positions.sun_pos[index]; 
 
-        List<double> subsolarPoint = currentPos.subsolar_point;
-
-        sun.SetPosition(currentPos.sun_pos);
+        sun.SetPosition(sunPosition);
         earth.SetRotation(subsolarPoint, sun.GetBody());
-        cubesat.SetPosition(currentPos.sc_pos_i);
-        cubesat.LookAt(sun.GetBody());
+    
+        foreach(Satellite satellite in positions.satellites){
+            cubesat.SetPosition(satellite.pos[index]);
+            cubesat.LookAt(sun.GetBody());
+        }
+
 
     }
 
