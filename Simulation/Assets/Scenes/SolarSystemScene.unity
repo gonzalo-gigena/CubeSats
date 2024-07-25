@@ -702,7 +702,7 @@ GameObject:
   - component: {fileID: 1558980066}
   - component: {fileID: 1558980069}
   m_Layer: 0
-  m_Name: CubesatCamera
+  m_Name: SatelliteCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

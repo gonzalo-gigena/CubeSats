@@ -16,15 +16,14 @@ public class CameraManager : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.V))
+        if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             currentCam = (currentCam + 1) % cameras.Count;
             NextCamera();
         }
-        else if (Input.GetKeyDown(KeyCode.C))
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             currentCam = (currentCam - 1 + cameras.Count) % cameras.Count;
-            Debug.Log(currentCam);
             NextCamera();
         }
     }
