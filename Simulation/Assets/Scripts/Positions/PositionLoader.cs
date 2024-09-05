@@ -7,10 +7,10 @@ public class Positions
     public List<string> dates { get; set; }
     public List<List<double>> subsolar_points { get; set; }
     public List<List<double>> sun_pos { get; set; }
-    public List<Satellite> satellites { get; set; }
+    public List<Satellites> satellites { get; set; }
 }
 
-public class Satellite
+public class Satellites
 {
     public string name { get; set; }
     public List<List<double>> pos { get; set; }

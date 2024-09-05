@@ -1,28 +1,39 @@
 using UnityEngine;
+using System.IO;
+using System.Collections;
 
 public class SatelliteCamera : MonoBehaviour
 {
-    GameObject satellite, sun;  // The target object to follow
-    string screenshotFolder = System.IO.Path.Combine(Application.dataPath, "../../SyntheticImages");
+    Sun sun;  // The target object to follow
+    Satellite satellite;
+
+    string screenshotFolder = Path.Combine(Application.dataPath, "../../SyntheticImages");
     public float lookSpeed = 10f;  // Speed of looking around
+
+    public void SetReferences(Satellite sat, Sun star)
+    {
+        satellite = sat;
+        sun = star;
+    }
+
     void Start()
     {
         // Create the screenshot folder if it doesn't exist
-        if (!System.IO.Directory.Exists(screenshotFolder))
+        if (!Directory.Exists(screenshotFolder))
         {
-            System.IO.Directory.CreateDirectory(screenshotFolder);
+            Directory.CreateDirectory(screenshotFolder);
         }
-
-        satellite = GameObject.FindGameObjectWithTag("Cubesat");
-        sun = GameObject.FindGameObjectWithTag("Sun");
     }
 
     void LateUpdate()
     {
-        if (transform.position != satellite.transform.position)
+        GameObject satBody = satellite.GetBody();
+        GameObject sunBody = sun.GetBody();
+
+        if (transform.position != satBody.transform.position)
         {
-            transform.position = satellite.transform.position;
-            transform.LookAt(sun.transform);
+            transform.position = satBody.transform.position;
+            transform.LookAt(sunBody.transform);
         }
         // Camera rotation
         if (Input.GetMouseButton(1)) // Right mouse button
@@ -35,18 +46,43 @@ public class SatelliteCamera : MonoBehaviour
         // Check for the screenshot key press
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            TakeScreenshot();
+            StartCoroutine(CaptureScreenshot());
         }
     }
 
-    public void TakeScreenshot()
+    private IEnumerator CaptureScreenshot()
     {
-        string timestamp = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        string position = satellite.transform.position.ToString();
-        string quaternion = transform.localRotation.ToString();
-        string filename = $"{screenshotFolder}/{timestamp}-{position}-{quaternion}.png";
+        yield return new WaitForEndOfFrame();
 
-        ScreenCapture.CaptureScreenshot(filename);
-        Debug.Log($"Screenshot taken and saved to: {filename}");
+        // Create a Texture2D with screen width and height
+        Texture2D screenshotTexture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+
+        // Read pixels from the screen into the texture
+        screenshotTexture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+        screenshotTexture.Apply();
+
+        // Encode the resized texture to JPG with quality 93
+        byte[] screenshotData = screenshotTexture.EncodeToJPG();
+
+        // Define the path and file name for saving the screenshot
+        string filePath = GenerateScreenshotPath();
+
+        // Save the encoded JPG to the file
+        File.WriteAllBytes(filePath, screenshotData);
+
+        // Clean up memory
+        Destroy(screenshotTexture);
+
+        Debug.Log($"Screenshot taken and saved to: {filePath}");
+    }
+
+    string GenerateScreenshotPath()
+    {
+        Quaternion quaternion = transform.localRotation;
+        string satRot = $"{quaternion.x},{quaternion.y},{quaternion.z},{quaternion.w}";
+        string satPos = string.Join(",", satellite.originalPos);
+        string filePath = $"{screenshotFolder}/{satellite.name}_{satellite.date}_{satPos}_{satRot}.jpg";
+        
+        return filePath;
     }
 }

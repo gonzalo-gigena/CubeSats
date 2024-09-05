@@ -1,7 +1,7 @@
 import json
 import ephem
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from info_extractor import search_tle_by_date, sat_pos_and_vel, jday, sun_pos_from_sc
 
 DATE_FORMAT = '%d-%m-%Y %H:%M:%S.%f'
@@ -39,16 +39,16 @@ def generate_position(dt):
     return sun_pos, subsolar_point, pos
 
 if __name__ == '__main__':
-    N = 10
+    N = 100
     #starting_date = datetime.strptime('18-06-2024 00:00:00.000000', DATE_FORMAT)
-    starting_date = datetime.utcnow()
+    starting_date = datetime.now(UTC)
     
     positions = {
         'dates': [],
         'subsolar_points': [],
         'sun_pos': [],
         'satellites': [{
-            'name': 'CUBESAT',
+            'name': 'cubesat',
             'pos': []
         }]
     }

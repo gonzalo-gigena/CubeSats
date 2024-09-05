@@ -5,10 +5,11 @@ using UnityEngine;
 public class UpdatePosition : MonoBehaviour
 {
     Sun sun;
-    Cubesat cubesat;
+    Satellite sat;
     Earth earth;
     Positions positions;
     int index = 0;
+    int satellite_index = 0; // for now there is only one satellite 
 
     void Start()
     {
@@ -23,7 +24,12 @@ public class UpdatePosition : MonoBehaviour
 
         earth = new Earth(earthObj, Units.EARTH_RADIUS);
         sun = new Sun(sunObj, Units.SUN_RADIUS);
-        cubesat = new Cubesat(cubesatObj);
+        sat = new Satellite(cubesatObj);
+
+        // Pass reference to satellite camera
+        GameObject satelliteCamera = GameObject.Find("SatelliteCamera");
+        SatelliteCamera satelliteCameraScript = satelliteCamera.GetComponent<SatelliteCamera>();
+        satelliteCameraScript.SetReferences(sat, sun);
 
         SetPositions();
     }
@@ -46,19 +52,19 @@ public class UpdatePosition : MonoBehaviour
 
     void SetPositions()
     {
-        String date = positions.dates[index];
+        string date = positions.dates[index];
         List<double> subsolarPoint = positions.subsolar_points[index];
         List<double> sunPosition = positions.sun_pos[index]; 
+
+        string name = positions.satellites[satellite_index].name;
+        List<double> satPosition = positions.satellites[satellite_index].pos[index];
 
         sun.SetPosition(sunPosition);
         earth.SetRotation(subsolarPoint, sun.GetBody());
     
-        foreach(Satellite satellite in positions.satellites){
-            cubesat.SetPosition(satellite.pos[index]);
-            cubesat.LookAt(sun.GetBody());
-        }
-
-
+        sat.SetPosition(satPosition);
+        sat.LookAt(sun.GetBody());
+        sat.UpdateProperties(date, name, satPosition);
     }
 
 }
