@@ -8,6 +8,8 @@ TagManager:
   - Sun
   - Cubesat
   - EarthBody
+  - Cameras
+  - Sun Light
   layers:
   - Default
   - TransparentFX
