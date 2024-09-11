@@ -39,7 +39,7 @@ def generate_position(dt):
     return sun_pos, subsolar_point, pos
 
 if __name__ == '__main__':
-    N = 100
+    N = 20
     #starting_date = datetime.strptime('18-06-2024 00:00:00.000000', DATE_FORMAT)
     starting_date = datetime.now(UTC)
     

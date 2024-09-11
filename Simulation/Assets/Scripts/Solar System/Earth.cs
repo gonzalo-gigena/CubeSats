@@ -20,6 +20,9 @@ public class Earth : Body
         // Find a child by name
         GameObject child = body.transform.Find("Body").gameObject;
         child.transform.localRotation = Quaternion.Euler(0, -lon, -lat);
+
+        GameObject clouds = body.transform.Find("Clouds").gameObject;
+        clouds.transform.localRotation = Quaternion.Euler(0, -lon, -lat);
     }
 }
 
