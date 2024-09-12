@@ -8,8 +8,8 @@ public static class Flare
         Vector3 viewportPoint = cam.WorldToViewportPoint(obj.transform.position);
 
         // Check if the viewport point is within the camera's view frustum
-        bool isInViewport = viewportPoint.x >= 0 && viewportPoint.x <= 1 &&
-                            viewportPoint.y >= 0 && viewportPoint.y <= 1 &&
+        bool isInViewport = viewportPoint.x >= -0.5 && viewportPoint.x <= 1.5 &&
+                            viewportPoint.y >= -0.5 && viewportPoint.y <= 1.5 &&
                             viewportPoint.z > 0;
 
         if (!isInViewport)

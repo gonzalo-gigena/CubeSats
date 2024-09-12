@@ -49,8 +49,47 @@ public class SatelliteCamera : MonoBehaviour
             StartCoroutine(CaptureScreenshot());
         }
     }
-
     private IEnumerator CaptureScreenshot()
+    {
+        yield return new WaitForEndOfFrame();
+
+        // Get the camera attached to the current GameObject (this script is attached to the camera)
+        Camera camera = GetComponent<Camera>();
+
+        // Create a temporary RenderTexture with the desired 1x1 aspect ratio (102x102)
+        RenderTexture renderTexture = new RenderTexture(102, 102, 24);
+        RenderTexture.active = renderTexture;
+
+        // Create a Texture2D to hold the resized screenshot
+        Texture2D screenshotTexture = new Texture2D(102, 102, TextureFormat.RGB24, false);
+
+        // Capture the screen into the RenderTexture
+        camera.targetTexture = renderTexture;
+        camera.Render();
+
+        // Read pixels from the RenderTexture into the Texture2D
+        screenshotTexture.ReadPixels(new Rect(0, 0, 102, 102), 0, 0);
+        screenshotTexture.Apply();
+
+        // Encode the resized texture to JPG with quality 93
+        byte[] screenshotData = screenshotTexture.EncodeToJPG(93);
+
+        // Define the path and file name for saving the screenshot
+        string filePath = GenerateScreenshotPath();
+
+        // Save the encoded JPG to the file
+        File.WriteAllBytes(filePath, screenshotData);
+
+        // Clean up memory
+        camera.targetTexture = null;
+        RenderTexture.active = null;
+        Destroy(renderTexture);
+        Destroy(screenshotTexture);
+
+        Debug.Log($"Screenshot taken and saved to: {filePath}");
+    }
+
+    private IEnumerator CaptureScreenshot2()
     {
         yield return new WaitForEndOfFrame();
 
@@ -82,7 +121,7 @@ public class SatelliteCamera : MonoBehaviour
         string satRot = $"{quaternion.x},{quaternion.y},{quaternion.z},{quaternion.w}";
         string satPos = string.Join(",", satellite.originalPos);
         string filePath = $"{screenshotFolder}/{satellite.name}_{satellite.date}_{satPos}_{satRot}.jpg";
-        
+
         return filePath;
     }
 }
