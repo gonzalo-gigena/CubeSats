@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 
 public class Positions
 {
+    public int total { get; set; }
     public List<string> dates { get; set; }
     public List<List<double>> subsolar_points { get; set; }
     public List<List<double>> sun_pos { get; set; }

@@ -1,7 +1,33 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
-public static class Flare
+public class FlareManager : MonoBehaviour
 {
+    GameObject sunLight;
+    LensFlareComponentSRP lensFlareSRP;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        sunLight = GameObject.FindGameObjectWithTag("Sun Light");
+        lensFlareSRP = sunLight.GetComponent<LensFlareComponentSRP>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        // Check if the sun can be seen, if not disable flare.
+        EnableFlareSRP();
+    }
+
+    void EnableFlareSRP()
+    {
+        // Get the camera attached to the current GameObject (this script is attached to the camera)
+        Camera camera = GetComponent<Camera>();
+        lensFlareSRP.enabled = IsObjectInView(sunLight, camera);
+    }
+
     public static bool IsObjectInView(GameObject obj, Camera cam)
     {
         // Convert the object's position to viewport space

@@ -39,11 +39,12 @@ def generate_position(dt):
     return sun_pos, subsolar_point, pos
 
 if __name__ == '__main__':
-    N = 20
+    N = 50000
     #starting_date = datetime.strptime('18-06-2024 00:00:00.000000', DATE_FORMAT)
     starting_date = datetime.now(UTC)
     
     positions = {
+        'total': N,
         'dates': [],
         'subsolar_points': [],
         'sun_pos': [],
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     }
 
     for i in range(0, N):
-        new_date = starting_date + timedelta(minutes=i)
+        new_date = starting_date + timedelta(seconds=i*51)
         sun_pos, subsolar_point, sat_pos = generate_position(new_date)
         positions['dates'].append(new_date.strftime(DATE_FORMAT))
         positions['subsolar_points'].append(subsolar_point)

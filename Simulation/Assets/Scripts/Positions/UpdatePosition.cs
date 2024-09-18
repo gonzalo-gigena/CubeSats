@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class UpdatePosition : MonoBehaviour
     Satellite sat;
     Earth earth;
     Positions positions;
+    SatelliteCamera satelliteCameraScript;
     int index = 0;
     int satellite_index = 0; // for now there is only one satellite 
 
@@ -28,13 +30,37 @@ public class UpdatePosition : MonoBehaviour
 
         // Pass reference to satellite camera
         GameObject satelliteCamera = GameObject.Find("SatelliteCamera");
-        SatelliteCamera satelliteCameraScript = satelliteCamera.GetComponent<SatelliteCamera>();
-        satelliteCameraScript.SetReferences(sat, sun);
+        satelliteCameraScript = satelliteCamera.GetComponent<SatelliteCamera>();
+        satelliteCameraScript.SetReferences(sat);
 
-        SetPositions();
+        StartCoroutine(CaptureScreenshotsContinuously());
     }
 
-    void Update()
+    // Coroutine to capture screenshots continuously
+    IEnumerator CaptureScreenshotsContinuously()
+    {
+        while (index < positions.total)
+        {
+            // Move to the next position of the planets
+            SetPositions();
+
+            // Randomize the camera's rotation
+            satelliteCameraScript.RandomizeCameraRotation();
+
+            // Take a screenshot (wait for end of frame to ensure proper rendering)
+            yield return StartCoroutine(satelliteCameraScript.CaptureScreenshot());
+
+            // Increment the image index
+            index++;
+
+            // Optionally, yield return null to capture the next frame immediately
+            yield return null;
+        }
+
+        Debug.Log("Screenshot capture complete.");
+    }
+
+    /*void Update()
     {
         // Check if the spacebar is pressed
         if (Input.GetKeyDown(KeyCode.Space))
@@ -46,9 +72,9 @@ public class UpdatePosition : MonoBehaviour
     void NextPosition()
     {
         // All list inside the Positions object have the same length
-        index = (index + 1) % positions.dates.Count;
+        index = (index + 1) % positions.total;
         SetPositions();
-    }
+    }*/
 
     void SetPositions()
     {
@@ -63,7 +89,7 @@ public class UpdatePosition : MonoBehaviour
         earth.SetRotation(subsolarPoint, sun.GetBody());
     
         sat.SetPosition(satPosition);
-        sat.LookAt(sun.GetBody());
+        //sat.LookAt(sun.GetBody());
         sat.UpdateProperties(date, name, satPosition);
     }
 
