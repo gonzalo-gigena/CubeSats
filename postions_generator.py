@@ -1,10 +1,25 @@
 import json
 import ephem
+import argparse
 
 from datetime import datetime, timedelta, UTC
 from info_extractor import search_tle_by_date, sat_pos_and_vel, jday, sun_pos_from_sc
 
 DATE_FORMAT = '%d-%m-%Y %H:%M:%S.%f'
+
+def parse_arguments():
+  # Create the argument parser
+  parser = argparse.ArgumentParser(description="Generae satellite positions for unity simulation")
+
+  # Add arguments for 'n'
+  parser.add_argument('-n', type=int, default=1000, help='Number of positions to generate (default: 1000)')
+
+  # Parse the arguments
+  args = parser.parse_args()
+
+  N = args.n
+  
+  return N
 
 def subsolar_point_at_utc(utc_datetime):
     # Initialize an observer location (use a central point on Earth)
@@ -39,7 +54,7 @@ def generate_position(dt):
     return sun_pos, subsolar_point, pos
 
 if __name__ == '__main__':
-    N = 50000
+    N = parse_arguments()
     #starting_date = datetime.strptime('18-06-2024 00:00:00.000000', DATE_FORMAT)
     starting_date = datetime.now(UTC)
     
