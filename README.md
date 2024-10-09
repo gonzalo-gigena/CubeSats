@@ -29,7 +29,7 @@ string filePath = $"{screenshotFolder}/{satellite.name}_{satellite.date}_{satPos
 
 3. **`{satPos}`**: This inserts the current position of the satellite (`satPos`) to represent the satellite's coordinates (X, Y, Z).
 
-4. **`{satRot}`**: This inserts the current rotation of the satellite (`satRot`), perhaps in quaternion form or Euler angles, e.g., `"0.4703567,-0.01855032,0.8145117,0.3391037"`.
+4. **`{satRot}`**: This inserts the current rotation of the satellite (`satRot`), in quaternion form, e.g., `"0.4703567,-0.01855032,0.8145117,0.3391037"`.
 
 
 This dynamically generated name helps ensure that each screenshot is unique based on the satellite's properties and the current date and time.
