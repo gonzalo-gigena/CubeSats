@@ -29,7 +29,7 @@ def search_tle_by_date(jd, year):
     
     current_epoch_tle = float(f"{year % 100}{round(epoch_day, 8)}")
 
-    file_tle = open("sat000052191.txt", 'r').read()
+    file_tle = open("LTE.txt", 'r').read()
     epoch_day_tle = [float(line[17:33]) for line in file_tle.split('\n')[:-1] if line[0] == '1']
 
     idx = np.argmin(np.abs(current_epoch_tle - np.array(epoch_day_tle)))
@@ -103,14 +103,3 @@ def get_file_info(file_name):
         'sat_name': sat,
         'sat_node': node
     }
-
-if __name__ == '__main__':
-    files =  os.listdir('./images')
-
-    dataset_info = []
-    # loop through each image in the dataset
-    for file_name in files:
-        dataset_info.append(get_file_info(file_name))
-
-    with open('satellite_data_040822-160822.json', 'w') as outfile:
-        json.dump(dataset_info, outfile, indent=2)

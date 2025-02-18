@@ -44,17 +44,21 @@ public class UpdatePosition : MonoBehaviour
             // Move to the next position of the planets
             SetPositions();
 
-            // Randomize the camera's rotation
-            satelliteCameraScript.RandomizeCameraRotation();
+            // Take 5 screenshots for each position
+            for (int shotCount = 0; shotCount < 10; shotCount++)
+            {
+                // Randomize the camera's rotation for each shot
+                satelliteCameraScript.RandomizeCameraRotation();
 
-            // Take a screenshot (wait for end of frame to ensure proper rendering)
-            yield return StartCoroutine(satelliteCameraScript.CaptureScreenshot());
+                // Take a screenshot (wait for end of frame to ensure proper rendering)
+                yield return StartCoroutine(satelliteCameraScript.CaptureScreenshot());
 
-            // Increment the image index
+                // Optionally, yield return null to capture the next frame immediately
+                yield return null;
+            }
+
+            // Increment the image index after all 5 screenshots are taken
             index++;
-
-            // Optionally, yield return null to capture the next frame immediately
-            yield return null;
         }
 
         Debug.Log("Screenshot capture complete.");
@@ -73,6 +77,7 @@ public class UpdatePosition : MonoBehaviour
     {
         // All list inside the Positions object have the same length
         index = (index + 1) % positions.total;
+        Debug.Log($"Position: {index}");
         SetPositions();
     }*/
 
@@ -80,14 +85,14 @@ public class UpdatePosition : MonoBehaviour
     {
         string date = positions.dates[index];
         List<double> subsolarPoint = positions.subsolar_points[index];
-        List<double> sunPosition = positions.sun_pos[index]; 
+        List<double> sunPosition = positions.sun_pos[index];
 
         string name = positions.satellites[satellite_index].name;
         List<double> satPosition = positions.satellites[satellite_index].pos[index];
 
         sun.SetPosition(sunPosition);
         earth.SetRotation(subsolarPoint, sun.GetBody());
-    
+
         sat.SetPosition(satPosition);
         //sat.LookAt(sun.GetBody());
         sat.UpdateProperties(date, name, satPosition);

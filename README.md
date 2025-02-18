@@ -1,15 +1,13 @@
-# CubeSats
-
-## Satellite Image Generation
+# Satellite Image Generation
 
 This project consists of two Python scripts, `info_extractor.py` and `positions_generator.py`, designed to process and generate synthetic satellite images. The `info_extractor.py` script processes satellite images to extract key information such as satellite positions, velocities, and sun positions, and saves the extracted data into a JSON file. The `positions_generator.py` script generates N satellite positions for use in a Unity simulation. The generated images are stored in the *SyntheticImages* folder.
 
 ### Usage
 
-1. Ensure the TLE data file `sat000052191.txt` is in the same directory as the scripts.
+1. Ensure the TLE data file `LTE.txt` is in the same directory as the scripts.
 2. To generate satellite positions (e.g., 5000 positions), run the script with the following command:
    ```sh
-   python positions_generator.py -n 5000
+   postions_generator.py --n 1000 --starting_date "18-06-2024 00:00:00.000000" --step 51
    ```
 3. The script will create a `generated_positions.json` file inside the Unity project directory.
 4. Open Unity and load the project.

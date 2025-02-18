@@ -9,17 +9,25 @@ DATE_FORMAT = '%d-%m-%Y %H:%M:%S.%f'
 
 def parse_arguments():
   # Create the argument parser
-  parser = argparse.ArgumentParser(description="Generae satellite positions for unity simulation")
+  parser = argparse.ArgumentParser(description='Generae satellite positions for unity simulation')
 
-  # Add arguments for 'n'
-  parser.add_argument('-n', type=int, default=1000, help='Number of positions to generate (default: 1000)')
+  parser.add_argument('--n', type=int, default=1000, help='Number of positions to generate (default: 1000)')
+  parser.add_argument('--starting_date', type=str, default=None, help='Starting date in format "DD-MM-YYYY HH:MM:SS.ffffff"')
+  parser.add_argument('--step', type=int, help='Time step in seconds')
 
   # Parse the arguments
   args = parser.parse_args()
-
-  N = args.n
   
-  return N
+  # Use the current UTC time if no starting_date is provided
+  if args.starting_date is None:
+      starting_date = datetime.now(UTC)
+  else:
+      try:
+          starting_date = datetime.strptime(args.starting_date, DATE_FORMAT).replace(tzinfo=UTC)
+      except ValueError:
+          parser.error(f"Invalid date format! Expected '{DATE_FORMAT}' but got '{args.starting_date}'")
+  
+  return args.n, starting_date, args.step
 
 def subsolar_point_at_utc(utc_datetime):
     # Initialize an observer location (use a central point on Earth)
@@ -54,9 +62,8 @@ def generate_position(dt):
     return sun_pos, subsolar_point, pos
 
 if __name__ == '__main__':
-    N = parse_arguments()
-    #starting_date = datetime.strptime('18-06-2024 00:00:00.000000', DATE_FORMAT)
-    starting_date = datetime.now(UTC)
+    N, starting_date, step = parse_arguments()
+    print(N, starting_date, step)
     
     positions = {
         'total': N,
@@ -70,7 +77,7 @@ if __name__ == '__main__':
     }
 
     for i in range(0, N):
-        new_date = starting_date + timedelta(seconds=i*51)
+        new_date = starting_date + timedelta(seconds=i*step)
         sun_pos, subsolar_point, sat_pos = generate_position(new_date)
         positions['dates'].append(new_date.strftime(DATE_FORMAT))
         positions['subsolar_points'].append(subsolar_point)
